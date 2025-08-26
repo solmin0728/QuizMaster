@@ -19,12 +19,12 @@ public class QSO : ScriptableObject
         return answers[i];
     }
 
-    public string GetCorrectAnswerIndex()
+    public string GetCorrectAnswer()
     {
         return answers [correctAnswerIndex];
     }
 
-    public int GetCorrectAnswerIndexInt()
+    public int GetCorrectAnswerIndex()
     {
         return correctAnswerIndex;
     }
