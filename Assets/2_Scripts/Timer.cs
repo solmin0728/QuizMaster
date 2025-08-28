@@ -8,10 +8,12 @@ public class Timer : MonoBehaviour
 
     [HideInInspector] public bool isProblemTime = true;
     [HideInInspector] public float fillAmount;
+    [HideInInspector] public bool LoadNextQuestion;
 
     private void Start()
     {
         time = problemTime;
+        LoadNextQuestion = true;
     }
 
     private void Update()
@@ -34,7 +36,6 @@ public class Timer : MonoBehaviour
 
     private void TimerCountDown()
     {
-        Debug.Log("time remaining" + time);
         time -= Time.deltaTime;
         if (time <= 0f)
         {
@@ -47,10 +48,16 @@ public class Timer : MonoBehaviour
             {
                 isProblemTime = true;
                 time = problemTime;
+                LoadNextQuestion = true;
             }
 
             Debug.Log("시간초과!");
-            time = problemTime;
+            // time = problemTime; // 이 줄을 삭제하세요!
         }
+    }
+
+    public void CancelTimer()
+    {
+        time = 0;
     }
 }
