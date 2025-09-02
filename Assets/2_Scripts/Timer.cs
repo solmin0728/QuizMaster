@@ -13,7 +13,6 @@ public class Timer : MonoBehaviour
     private void Start()
     {
         time = problemTime;
-        LoadNextQuestion = true;
     }
 
     private void Update()
@@ -52,7 +51,6 @@ public class Timer : MonoBehaviour
             }
 
             Debug.Log("시간초과!");
-            // time = problemTime; // 이 줄을 삭제하세요!
         }
     }
 

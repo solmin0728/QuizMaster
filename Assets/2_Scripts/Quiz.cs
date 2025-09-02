@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,7 +7,8 @@ public class Quiz : MonoBehaviour
 {
     [Header("질문")]
     [SerializeField] TextMeshProUGUI questionText;
-    [SerializeField] QSO question;
+    [SerializeField] List<QSO> questions = new List<QSO>();
+    QSO currentQuestion;
 
     [Header("보기")]
     [SerializeField] GameObject[] answerButtons;
@@ -23,9 +24,14 @@ public class Quiz : MonoBehaviour
     Timer timer;
     bool chooseAnswer = false;
 
+    [Header("점수")]
+    [SerializeField] TextMeshProUGUI scoreText;
+    ScoreKeeper scoreKeeper;
+
     void Start()
     {
         timer = FindFirstObjectByType<Timer>();
+        scoreKeeper = FindFirstObjectByType<ScoreKeeper>();
         GetNextQuestion();
     }
 
@@ -55,19 +61,33 @@ public class Quiz : MonoBehaviour
 
     private void GetNextQuestion()
     {
+        if (questions.Count <= 0)
+        {
+            return;
+        }
+
         chooseAnswer = false;
         SetButtonState(true);
         SetDefaultButtonSprites();
+        GetRandomQuestion();
         OnDisplayQuestion();
+        scoreKeeper.IncrementQuestionSeen();
+    }
+
+    private void GetRandomQuestion()
+    {
+        int randomindex = UnityEngine.Random.Range(0, questions.Count);
+        currentQuestion = questions[randomindex];
+        questions.RemoveAt(randomindex);
     }
 
     private void OnDisplayQuestion()
     {
-        questionText.text = question.GetQuestion();
+        questionText.text = currentQuestion.GetQuestion();
 
         for (int i = 0; i < answerButtons.Length; i++)
         {
-            answerButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = question.GetAnswers(i);
+            answerButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = currentQuestion.GetAnswers(i);
         }
     }
 
@@ -76,18 +96,20 @@ public class Quiz : MonoBehaviour
         chooseAnswer = true;
         DisplaySolution(index);
         timer.CancelTimer();
+        scoreText.text = $"Score : {scoreKeeper.CalculateScore()}%";
     }
 
     private void DisplaySolution(int index)
     {
-        if (index == question.GetCorrectAnswerIndex())
+        if (index == currentQuestion.GetCorrectAnswerIndex())
         {
             questionText.text = "정답입니다!";
             answerButtons[index].GetComponent<Image>().sprite = correctAnswerSprite;
+            scoreKeeper.IncrementCorrectAnswers();
         }
         else
         {
-            questionText.text = "틀렸습니다! 정답은" + question.GetCorrectAnswer() + "입니다!";
+            questionText.text = "틀렸습니다! 정답은" + currentQuestion.GetCorrectAnswer() + "입니다!";
         }
         SetButtonState(false);
     }

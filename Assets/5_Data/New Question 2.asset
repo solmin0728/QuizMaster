@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: New Question 2
   m_EditorClassIdentifier: 
   question: "\uC9C8\uBB383"
+  answers:
+  - 1
+  - 2
+  - 3
+  - 4
+  correctAnswerIndex: 0
