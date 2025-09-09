@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -31,19 +32,40 @@ public class Quiz : MonoBehaviour
     [Header("ProgressBar")]
     [SerializeField] Slider progressBar;
 
+    bool isGeneratingQuestions = false;
+
     void Start()
     {
         timer = FindFirstObjectByType<Timer>();
         scoreKeeper = FindFirstObjectByType<ScoreKeeper>();
+
+        if (questions.Count == 0)
+        {
+            GenerateQuestionsIfNeeded();
+        }
+        else
+        {
+            InitalizeProgressBar();
+        }
+    }
+
+    private void GenerateQuestionsIfNeeded()
+    {
+        if (isGeneratingQuestions) return;
+
+        isGeneratingQuestions = true;
+        GameManager.Instance.ShowLoadingScreen();
+    }
+
+    private void InitalizeProgressBar()
+    {
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
-
-        GetNextQuestion();
     }
 
     private void Update()
     {
-        //타이머 이미지 업데이트
+        //타이머 이미지 업데이트  
         if (timer.isProblemTime)
             TimerImage.sprite = problemTimeSprite;
         else
@@ -51,14 +73,21 @@ public class Quiz : MonoBehaviour
 
         TimerImage.fillAmount = timer.fillAmount;
 
-        //다음 문제 불러오기
+        //다음 문제 불러오기  
         if (timer.LoadNextQuestion)
         {
-            timer.LoadNextQuestion = false;
-            GetNextQuestion();
+            if (questions.Count == 0)
+            {
+                GenerateQuestionsIfNeeded(); // 메서드 호출로 수정  
+            }
+            else
+            {
+                timer.LoadNextQuestion = false;
+                GetNextQuestion();
+            }
         }
 
-        //문제 시간에 답을 선택하지 않았을 때
+        //문제 시간에 답을 선택하지 않았을 때  
         if (timer.isProblemTime == false && chooseAnswer == false)
         {
             DisplaySolution(-1);
