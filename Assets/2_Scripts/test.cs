@@ -7,8 +7,8 @@ public class test : MonoBehaviour
     {
         Debug.Log("Hello, World!");
         Publisher publisher = new Publisher();
-        publisher.msg += ResultProcess;
-        publisher.msg += OtherProcess;
+        publisher.Msg += ResultProcess;
+        publisher.Msg += OtherProcess;
 
         publisher.SendMessage("추가");
 
@@ -32,13 +32,13 @@ public class test : MonoBehaviour
 public class Publisher
 {
     public delegate void OnMessage(string msg);
-    public event OnMessage msg;
+    public event OnMessage Msg;
 
     // 참조 1개
     public void SendMessage(string text)
     {
         Debug.Log($"ChatGPT API와 통신합니다.(로딩중)... {text}");
 
-        msg?.Invoke(text);
+        Msg?.Invoke(text);
     }
 }

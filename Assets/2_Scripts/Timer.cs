@@ -50,8 +50,6 @@ public class Timer : MonoBehaviour
                 time = problemTime;
                 LoadNextQuestion = true;
             }
-
-            Debug.Log("시간초과!");
         }
     }
 

@@ -32,12 +32,18 @@ public class Quiz : MonoBehaviour
     [Header("ProgressBar")]
     [SerializeField] Slider progressBar;
 
+    [Header("ChatGPT Client")]
+    [SerializeField] ChatGPTClient chatGPTClient;
+    [SerializeField] int questionCount = 3;
+    [SerializeField] TextMeshProUGUI loadingText;
+
     bool isGeneratingQuestions = false;
 
     void Start()
     {
         timer = FindFirstObjectByType<Timer>();
         scoreKeeper = FindFirstObjectByType<ScoreKeeper>();
+        chatGPTClient.quizGenerateHandler += QuizGeneratedHandler;
 
         if (questions.Count == 0)
         {
@@ -55,6 +61,34 @@ public class Quiz : MonoBehaviour
 
         isGeneratingQuestions = true;
         GameManager.Instance.ShowLoadingScreen();
+
+        string topicToUse = GetTrendingTopic();
+        chatGPTClient.GenerateQuizQuestions(questionCount, topicToUse);
+        Debug.Log($"GenerateQuestionsIfNeeded: {topicToUse}");
+    }
+
+    private string GetTrendingTopic()
+    {
+        string[] topics = new string[] { "과학", "역사", "음악", "영화", "스포츠", "기술", "문학", "예술", "지리", "동물" };
+        int randomindex = UnityEngine.Random.Range(0, topics.Length);
+        return topics[randomindex];
+    }
+
+    void QuizGeneratedHandler(List<QSO> generatedQuestions)
+    {
+        Debug.Log($"QuizGeneratedHandler: {generatedQuestions.Count} questions received.");
+        isGeneratingQuestions = false;
+
+        if(generatedQuestions == null || generatedQuestions.Count == 0)
+        {
+            Debug.LogError("에러");
+            loadingText.text = "문제가 생성되지 않았습니다. 다시 시도해주세요.";
+            return;
+        }
+
+        questions.AddRange(generatedQuestions);
+        progressBar.maxValue += generatedQuestions.Count;
+        GetNextQuestion();
     }
 
     private void InitalizeProgressBar()
@@ -82,7 +116,7 @@ public class Quiz : MonoBehaviour
             }
             else
             {
-                timer.LoadNextQuestion = false;
+                //timer.LoadNextQuestion = false;
                 GetNextQuestion();
             }
         }
@@ -101,6 +135,9 @@ public class Quiz : MonoBehaviour
             return;
         }
 
+        timer.LoadNextQuestion = false;
+
+        GameManager.Instance.ShowQuizScreen();
         chooseAnswer = false;
         SetButtonState(true);
         SetDefaultButtonSprites();
@@ -145,7 +182,7 @@ public class Quiz : MonoBehaviour
         }
         else
         {
-            questionText.text = "틀렸습니다! 정답은" + currentQuestion.GetCorrectAnswer() + "입니다!";
+            questionText.text = "틀렸습니다! 정답은 " + currentQuestion.GetCorrectAnswer() + " 입니다!";
         }
         SetButtonState(false);
     }
@@ -165,4 +202,6 @@ public class Quiz : MonoBehaviour
             obj.GetComponent<Button>().interactable = state;
         }
     }
+    // 참조 1개
+
 }
