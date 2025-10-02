@@ -1,14 +1,22 @@
+ï»¿using TMPro;
 using UnityEngine;
+
 
 public class Timer : MonoBehaviour
 {
-    [SerializeField]float problemTime = 10f; //¹®Á¦ Çª´Â ½Ã°£
-    [SerializeField]float solutionTime = 3f; //Á¤´ä È®ÀÎÇÏ´Â ½Ã°£
+    [SerializeField] float problemTime = 10f; //ë¬¸ì œ í‘¸ëŠ” ì‹œê°„
+    [SerializeField] float solutionTime = 3f; //ì •ë‹µ í™•ì¸í•˜ëŠ” ì‹œê°„
     float time = 0f;
 
     [HideInInspector] public bool isProblemTime = true;
     [HideInInspector] public float fillAmount;
     [HideInInspector] public bool LoadNextQuestion;
+
+    public TextMeshProUGUI timerText; // ìˆ«ìž í‘œì‹œìš©
+    public Color fastColor = Color.white;
+    public Color midColor = Color.yellow;
+    public Color slowColor = Color.red;
+
 
     private void Start()
     {
@@ -50,6 +58,23 @@ public class Timer : MonoBehaviour
                 time = problemTime;
                 LoadNextQuestion = true;
             }
+        }
+
+        //ìˆ«ìž íƒ€ì´ë¨¸ í‘œì‹œ
+        if (timerText != null)
+        {
+            int seconds = Mathf.CeilToInt(time);
+            timerText.text = seconds.ToString();
+
+            float totalTime = isProblemTime ? problemTime : solutionTime;
+            float t = time / totalTime;
+
+            if (t > 0.5f)
+                timerText.color = fastColor;
+            else if (t > 0.3f)
+                timerText.color = midColor;
+            else
+                timerText.color = slowColor;
         }
     }
 
