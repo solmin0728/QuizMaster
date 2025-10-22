@@ -69,7 +69,7 @@ public class Quiz : MonoBehaviour
 
     private string GetTrendingTopic()
     {
-        string[] topics = new string[] { "과학", "역사", "음악", "영화", "스포츠", "기술", "문학", "예술", "지리", "동물" };
+        string[] topics = new string[] { "암산 수학" };
         int randomindex = UnityEngine.Random.Range(0, topics.Length);
         return topics[randomindex];
     }
