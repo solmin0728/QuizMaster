@@ -52,6 +52,7 @@ public class Quiz : MonoBehaviour
         else
         {
             InitalizeProgressBar();
+            GetNextQuestion();
         }
     }
 
