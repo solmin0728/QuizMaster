@@ -4,12 +4,15 @@ using System.Collections;
 
 public class CountdownManager : MonoBehaviour
 {
-    public GameObject countdownPanel; // UI 패널
-    public TMP_Text countdownText;    // 텍스트
-    public float countInterval = 1f;  // 1초 간격
+    public GameObject countdownPanel;
+    public TMP_Text countdownText;
+    public float countInterval = 1f;
 
     void Start()
     {
+        // 게임 멈춤
+        Time.timeScale = 0f;
+
         // UI 카운트다운 시작
         StartCoroutine(UICountdownRoutine());
     }
@@ -22,33 +25,22 @@ public class CountdownManager : MonoBehaviour
         while (count > 0)
         {
             countdownText.text = count.ToString();
-            yield return new WaitForSeconds(countInterval);
-            count--;
+
+            // 숫자가 표시된 상태로 1초 대기
+            yield return new WaitForSecondsRealtime(countInterval);
+
+            count--; // 1초가 지난 뒤 감소
         }
 
+        // "Go!" 표시
         countdownText.text = "Go!";
-        yield return new WaitForSeconds(countInterval);
+        yield return new WaitForSecondsRealtime(countInterval);
 
         countdownPanel.SetActive(false);
 
-        // UI 카운트다운 끝난 후 게임 카운트다운 시작
-        yield return StartCoroutine(GameCountdownRoutine());
-    }
-
-    IEnumerator GameCountdownRoutine()
-    {
-        // 게임 안에서 3,2,1 카운트다운
-        int gameCount = 3;
-        while (gameCount > 0)
-        {
-            Debug.Log("게임 시작까지: " + gameCount);
-            yield return new WaitForSeconds(1f);
-            gameCount--;
-        }
+        // 게임 재개
+        Time.timeScale = 1f;
 
         Debug.Log("게임 시작!");
-        // 여기서 실제 게임 로직 시작
-        // 예: player.CanMove = true;
-        yield return null;
     }
 }
